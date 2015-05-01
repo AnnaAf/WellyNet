@@ -1,5 +1,5 @@
 /*
-SoftwareSerialWithHalfDuplex.h (formerly SoftwareSerial.h) - 
+WellyNet.h (formerly SoftwareSerialWithHalfDuplex.h) - 
 Multi-instance software serial with half duplex library for Arduino/Wiring
 
 By default the library works the same as the SoftwareSerial library, 
@@ -35,8 +35,8 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef SoftwareSerialWithHalfDuplex_h
-#define SoftwareSerialWithHalfDuplex_h
+#ifndef WellyNet_h
+#define WellyNet_h
 
 #include <inttypes.h>
 #include <Stream.h>
@@ -50,17 +50,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
-class SoftwareSerialWithHalfDuplex : public Stream
+class WellyNet : public Stream
 {
 private:
   // per object data
-  uint8_t _receivePin;
-  uint8_t _receiveBitMask;
+  uint8_t _commPin;
+  uint8_t _commBitMask;
   volatile uint8_t *_receivePortRegister;
-  uint8_t _transmitPin;								//NS Added
-  uint8_t _transmitBitMask;
   volatile uint8_t *_transmitPortRegister;
-  
+  uint8_t _wnetAddress;
   uint16_t _rx_delay_centering;
   uint16_t _rx_delay_intrabit;
   uint16_t _rx_delay_stopbit;
@@ -74,22 +72,21 @@ private:
   static char _receive_buffer[_SS_MAX_RX_BUFF]; 
   static volatile uint8_t _receive_buffer_tail;
   static volatile uint8_t _receive_buffer_head;
-  static SoftwareSerialWithHalfDuplex *active_object;
+  static WellyNet *active_object;
 
   // private methods
   void recv();
   uint8_t rx_pin_read();
   void tx_pin_write(uint8_t pin_state);
-  void setTX(uint8_t transmitPin);
-  void setRX(uint8_t receivePin);
+  void setComm(uint8_t commPin);
 
   // private static method for timing
   static inline void tunedDelay(uint16_t delay);
 
 public:
   // public methods
-  SoftwareSerialWithHalfDuplex(uint8_t receivePin, uint8_t transmitPin, bool inverse_logic = false, bool full_duplex = true);
-  ~SoftwareSerialWithHalfDuplex();
+  WellyNet(uint8_t commPin, uint8_t address);
+  ~WellyNet();
   void begin(long speed);
   bool listen();
   void end();
